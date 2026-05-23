@@ -186,7 +186,7 @@ namespace KR
 			sounds[saveName].LoadFile(pathFull);
 		}
 		catch (const ErrorMsg& err) {
-			throw ErrorMsg(_T("SoundMng::LoadFile"), err.GetResult());
+			throw ErrorMsg(_T("SoundMng::LoadFile"), err.GetMsg());
 		}
 	}
 	//全サウンド停止.

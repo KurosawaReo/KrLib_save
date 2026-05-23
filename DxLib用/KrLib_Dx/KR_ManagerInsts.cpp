@@ -26,7 +26,7 @@ namespace KR
 	}
 
 	//管理クラスを探す.
-	ManagerBase* ManagerInsts::GetMngClass(const std::type_info& type) {
+	ManagerBase* ManagerInsts::GetMngClass(const std::type_info& type) const {
 		//保存された管理クラスを全ループ.
 		for (auto& m : mngInsts) {
 			if (typeid(*m) == type) {

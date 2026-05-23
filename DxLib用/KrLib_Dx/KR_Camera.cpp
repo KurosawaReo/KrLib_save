@@ -6,6 +6,7 @@
 //[include] ".cpp"ファイルでのみ使うもの.
 #include "KR_App.h"
 #include "KR_Calc.h"
+#include "../KrLib_cpp/KR_Calc.h"
 
 //KrLib名前空間.
 namespace KR
@@ -29,16 +30,17 @@ namespace KR
 		inst.cameraAng = _ang;
 		inst.FixAng360();
 	}
+
 	//add.
 	void Camera::AddPos(DBL_XY _pos, bool isLocal) {
-		//local: 角度を考慮して加算.
+		//[local] 角度を考慮して加算.
 		if (isLocal) {
 			DBL_XY vec  = Calc::AngToVector(inst.cameraAng-90);
 			double dist = Calc::Dist(DBL_XY(0, 0), _pos);
 			inst.cameraPos.x += vec.x * dist;
 			inst.cameraPos.y += vec.y * dist;
 		}
-		//world: 角度を考慮せず加算.
+		//[world] 角度を考慮せず加算.
 		else {
 			inst.cameraPos.x += _pos.x;
 			inst.cameraPos.y += _pos.y;

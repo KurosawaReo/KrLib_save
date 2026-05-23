@@ -7,6 +7,7 @@
 #include "KR_Calc.h"
 #include "KR_Input.h"
 #include "KR_ManagerInsts.h"
+#include "../KrLib_cpp/KR_Calc.h"
 
 //KrLib–¼‘O‹óŠÔ.
 namespace KR
@@ -111,7 +112,7 @@ namespace KR
 					pImg->Draw(pos, anc, true, isFloat, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("ObjectShape::DrawGraph"), err.GetResult());
+					throw ErrorMsg(_T("ObjectShape::DrawGraph"), err.GetMsg());
 					return;
 				}
 			}
@@ -148,7 +149,7 @@ namespace KR
 					pImg->DrawRect(pos, rect, anc, true, isFloat, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("ObjectShape::DrawRectGraph"), err.GetResult());
+					throw ErrorMsg(_T("ObjectShape::DrawRectGraph"), err.GetMsg());
 					return;
 				}
 			}
@@ -185,7 +186,7 @@ namespace KR
 					pImg->DrawExtend(pos, sizeRate, anc, true, isFloat, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("ObjectShape::DrawExtendGraph"), err.GetResult());
+					throw ErrorMsg(_T("ObjectShape::DrawExtendGraph"), err.GetMsg());
 					return;
 				}
 			}
@@ -222,7 +223,7 @@ namespace KR
 					pImg->DrawRota(pos, sizeRate, ang, pivot, true, isFloat, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("ObjectShape::DrawRotaGraph"), err.GetResult());
+					throw ErrorMsg(_T("ObjectShape::DrawRotaGraph"), err.GetMsg());
 					return;
 				}
 			}
@@ -269,7 +270,7 @@ namespace KR
 			DrawCircleKR(tmpCir, Anchor::Mid, isFill, isAnti, isCameraDisp);
 		}
 		catch (const ErrorMsg& err) {
-			throw ErrorMsg(_T("ObjectCir::DrawShape"), err.GetResult());
+			throw ErrorMsg(_T("ObjectCir::DrawShape"), err.GetMsg());
 			return;
 		}
 	}
@@ -300,7 +301,7 @@ namespace KR
 			DrawBoxKR(tmpBox, Anchor::Mid, isFill, isAnti, isCameraDisp);
 		}
 		catch (const ErrorMsg& err) {
-			throw ErrorMsg(_T("ObjectBox::DrawShape"), err.GetResult());
+			throw ErrorMsg(_T("ObjectBox::DrawShape"), err.GetMsg());
 			return;
 		}
 	}

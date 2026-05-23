@@ -208,7 +208,7 @@ namespace KR
 				DrawSplineKR(spline, degree, isDot, isAnti, isCameraDisp);
 			}
 			catch (const ErrorMsg& err) {
-				throw ErrorMsg(_T("SplineContr::Draw"), err.GetResult());
+				throw ErrorMsg(_T("SplineContr::Draw"), err.GetMsg());
 			}
 		}
 		//êßå‰ì_.

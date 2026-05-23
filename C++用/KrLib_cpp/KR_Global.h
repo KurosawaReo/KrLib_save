@@ -1,6 +1,6 @@
 /*
    - KR_Global.h - (C++)
-   ver.2026/04/27
+   ver.2026/05/07
 
    KrLib全体で使う汎用プログラム。
 */
@@ -20,8 +20,11 @@
 #include <unordered_map>
 #include <array>
 #include <memory>
-#include <string> //string型用.
-#include <cmath>  //math.hをラップしたもの.
+#include <string>  //string型用.
+#include <cassert> //assert.h をラップしたもの.
+#include <cmath>   //math.h   をラップしたもの.
+#include <cstdlib> //stdlib.h をラップしたもの.
+#include <ctime>   //time.h   をラップしたもの.
 //C言語用.
 #include <tchar.h>
 
@@ -369,7 +372,7 @@ namespace KR
 			funcName(_funcName), msg(_msg)
 		{};
 		//結果を取得.
-		MY_STRING GetResult() const {
+		MY_STRING GetMsg() const {
 			return _T("[Error] func name:") + funcName + _T(", msg:") + msg;
 		}
 	};

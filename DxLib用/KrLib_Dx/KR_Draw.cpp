@@ -7,6 +7,7 @@
 #include "KR_App.h"
 #include "KR_Calc.h"
 #include "KR_Camera.h"
+#include "../KrLib_cpp/KR_Calc.h"
 #include <algorithm>
 
 /*
@@ -800,7 +801,7 @@ namespace KR
 			DrawLineKR(line, isAnti, isCameraDisp);
 		}
 		catch (const ErrorMsg& err) {
-			throw ErrorMsg(_T("DrawPieKR"), err.GetResult());
+			throw ErrorMsg(_T("DrawPieKR"), err.GetMsg());
 			return;
 		}
 
@@ -810,7 +811,7 @@ namespace KR
 			DrawLineKR(line, isAnti, isCameraDisp);
 		}
 		catch (const ErrorMsg& err) {
-			throw ErrorMsg(_T("DrawPieKR"), err.GetResult());
+			throw ErrorMsg(_T("DrawPieKR"), err.GetMsg());
 			return;
 		}
 	}
@@ -844,7 +845,7 @@ namespace KR
 				DrawLineKR(line, isAnti, isCameraDisp);
 			}
 			catch (const ErrorMsg& err) {
-				throw ErrorMsg(_T("DrawArcKR"), err.GetResult());
+				throw ErrorMsg(_T("DrawArcKR"), err.GetMsg());
 				return;
 			}
 		}
@@ -875,7 +876,7 @@ namespace KR
 					DrawPixelKR(pos, bLine.color, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("DrawBezierLineKR"), err.GetResult());
+					throw ErrorMsg(_T("DrawBezierLineKR"), err.GetMsg());
 					return;
 				}
 			}
@@ -888,7 +889,7 @@ namespace KR
 					DrawLineKR(line, isAnti, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("DrawBezierLineKR"), err.GetResult());
+					throw ErrorMsg(_T("DrawBezierLineKR"), err.GetMsg());
 					return;
 				}
 			}
@@ -917,7 +918,7 @@ namespace KR
 					DrawPixelKR(pos, spline.color, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("DrawSplineKR"), err.GetResult());
+					throw ErrorMsg(_T("DrawSplineKR"), err.GetMsg());
 					return;
 				}
 			}
@@ -932,7 +933,7 @@ namespace KR
 					DrawLineKR(line, isAnti, isCameraDisp);
 				}
 				catch (const ErrorMsg& err) {
-					throw ErrorMsg(_T("DrawSplineKR"), err.GetResult());
+					throw ErrorMsg(_T("DrawSplineKR"), err.GetMsg());
 					return;
 				}
 			}
@@ -963,7 +964,7 @@ namespace KR
 				DrawLineKR(line, isAnti, isCameraDisp);
 			}
 			catch (const ErrorMsg& err) {
-				throw ErrorMsg(_T("DrawPolygonKR"), err.GetResult());
+				throw ErrorMsg(_T("DrawPolygonKR"), err.GetMsg());
 				return;
 			}
 		}
@@ -1089,7 +1090,7 @@ namespace KR
 				DrawLineKR(line);
 			}
 			catch (const ErrorMsg& err) {
-				throw ErrorMsg(_T("DrawWindowGrid"), err.GetResult());
+				throw ErrorMsg(_T("DrawWindowGrid"), err.GetMsg());
 				return;
 			}
 		}
@@ -1104,7 +1105,7 @@ namespace KR
 				DrawLineKR(line);
 			}
 			catch (const ErrorMsg& err) {
-				throw ErrorMsg(_T("DrawWindowGrid"), err.GetResult());
+				throw ErrorMsg(_T("DrawWindowGrid"), err.GetMsg());
 				return;
 			}
 		}

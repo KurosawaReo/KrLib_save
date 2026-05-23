@@ -1,6 +1,6 @@
 /*
    - KR_ManagerInsts.h - (DxLib)
-   ver.2026/04/29
+   ver.2026/05/07
 
    Managerを管理するクラス。
 */
@@ -33,11 +33,11 @@ namespace KR
 		ManagerInsts(){}
 		
 		//管理クラスを探す.
-		ManagerBase* GetMngClass(const std::type_info& type);
+		ManagerBase* GetMngClass(const std::type_info& type) const;
 
 	public:
 		//生成して登録.
-		//ManagerBaseを継承したクラスのみ指定可.
+		//ManagerBaseを継承したクラスのみ指定可能.
 		template<class T, class... Args> requires std::derived_from<T, ManagerBase>
 		static T* NewManager(Args&&... args) {
 
@@ -50,11 +50,15 @@ namespace KR
 			//ポインタを返す.
 			return ptr;
 		}
+
 		//管理クラスを1つ取得.
-		template<class T>
+		//ManagerBaseを継承したクラスのみ指定可能.
+		template<class T> requires std::derived_from<T, ManagerBase>
 		static T* Get() {
-			return static_cast<T*>(inst.GetMngClass(typeid(T)));
+			//子クラスのポインタに変換できるようdynamic_castを使う.
+			return dynamic_cast<T*>(inst.GetMngClass(typeid(T)));
 		}
+		
 		//管理クラスを全て取得.
 		static vector<unique_ptr<ManagerBase>>& GetAll() { return inst.mngInsts; }
 

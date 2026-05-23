@@ -1,12 +1,14 @@
 /*
    - main.cpp - (DxLib)
-   ver.2026/04/29
+   ver.2026/05/07
 
    プログラムの開始地点(テンプレ)
 */
 #include "KrLib_Dx/KR_Global.h"
 #include "KrLib_Dx/KR_App.h"
+#include "KrLib_Dx/KR_Debug.h"
 #include "KrLib_Dx/KR_Input.h"
+#include "KrLib_Dx/KR_Object.h"
 #include "KrLib_Dx/KR_ManagerBase.h"
 #include "KrLib_Dx/KR_ManagerInsts.h"
 #include "KrLib_Dx/KR_SceneMng.h"
@@ -34,6 +36,25 @@ public:
 	}
 };
 
+class Player : public ObjectCir
+{
+private:
+public:
+	//初期化.
+	void Init() override {
+	}
+	//更新.
+	void Update() override {
+	}
+	//描画.
+	void Draw() override {
+	}
+	//消滅条件(必要なら)
+	bool IsErase() const override {
+		return false;
+	}
+};
+
 int WINAPI WinMain(
 	_In_     HINSTANCE hinstance,
 	_In_opt_ HINSTANCE hPrevinstance,
@@ -50,11 +71,11 @@ int WINAPI WinMain(
 
 	try {
 		//初期化処理.
-		App::InitDx(WINDOW_WID, WINDOW_HEI, IS_WINDOW_MODE, FPS, false);
+		App::InitDx(800, 640, true, 60, false);
 	}
 	catch (const ErrorMsg& err) {
 		//エラーメッセージ.
-		Debug::Log(_T("InitDx"), err.GetResult());
+		Debug::Log(_T("InitDx"), err.GetMsg());
 	}
 
 	try {
@@ -63,7 +84,7 @@ int WINAPI WinMain(
 	}
 	catch (const ErrorMsg& err) {
 		//エラーメッセージ.
-		Debug::Log(_T("LoopDx"), err.GetResult());
+		Debug::Log(_T("LoopDx"), err.GetMsg());
 	}
 
 	return 0;

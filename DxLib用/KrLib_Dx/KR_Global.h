@@ -1,6 +1,6 @@
 /*
    - KR_Global.h - (DxLib)
-   ver.2026/04/29
+   ver.2026/05/21
 
    KrLib全体で使う汎用プログラム。
 */
@@ -9,15 +9,11 @@
 //このヘッダが定義されているか判別する用.
 #define DEF_KR_DX_GLOBAL
 
-//C++用のKrLibを導入.
+//C++用のグローバルを導入.
 #if !defined DEF_KR_CPP_GLOBAL
   #include "../KrLib_cpp/KR_Global.h"
 #endif
-//C++用.
-#include <cassert>   //assert.h をラップしたもの.
-#include <cstdlib>   //stdlib.h をラップしたもの.
-#include <ctime>     //time.h   をラップしたもの.
-//DxLib.
+//DxLibを導入.
 #include "DxLib.h"
 
 //KrLib名前空間.
