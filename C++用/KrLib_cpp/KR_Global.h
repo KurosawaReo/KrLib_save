@@ -1,6 +1,6 @@
 /*
    - KR_Global.h - (C++)
-   ver.2026/05/07
+   ver.2026/06/01
 
    KrLib全体で使う汎用プログラム。
 */
@@ -373,7 +373,7 @@ namespace KR
 		{};
 		//結果を取得.
 		MY_STRING GetMsg() const {
-			return _T("[Error] func name:") + funcName + _T(", msg:") + msg;
+			return _T("[Error] FuncName: ") + funcName + _T(", Msg: ") + msg;
 		}
 	};
 
