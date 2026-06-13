@@ -5,6 +5,7 @@
 
 //[include] ".cpp"ファイルでのみ使うもの.
 #include "KR_Calc.h"
+#include "KR_DrawShape.h"
 #include "KR_Input.h"
 #include "KR_ManagerInsts.h"
 #include "../KrLib_cpp/KR_Calc.h"
@@ -12,10 +13,7 @@
 //KrLib名前空間.
 namespace KR
 {
-	//参照(KRライブラリ)
-	static InputMng* inputMng = ManagerInsts::Get<InputMng>();
-
-	// ▼*--=<[ ObjectShape ]>=--*▼ //
+// ▼*--=<[ ObjectShape ]>=--*▼ //
 
 	//画像.
 	void ObjectShape::SetDrawImg(string name) {
@@ -58,8 +56,8 @@ namespace KR
 		Calc::FixPosInArea(GetPosPtr(), GetSize().ToInt(), rect);
 	}
 	//エリアを越えているかどうか.
-	bool ObjectShape::IsOutInArea(DBL_RECT rect, bool isCompOut) {
-		return Calc::IsOutInArea(GetPos(), GetSize().ToInt(), rect, isCompOut);
+	bool ObjectShape::IsOutInArea(DBL_RECT rect, bool isCompOut, Surface* surface) {
+		return Calc::IsOutInArea(GetPos(), GetSize().ToInt(), rect, isCompOut, surface);
 	}
 	//距離を求める.
 	double ObjectShape::Dist(DBL_XY pos) {
@@ -76,18 +74,22 @@ namespace KR
 
 	//移動操作.
 	void ObjectShape::MoveKey4Dir(float speed) {
-		SetPos(GetPos() + inputMng->GetKey4Dir()  * speed); //現在地 + 入力 * 速度.
+		const DBL_XY input = ManagerInsts::Get<InputMng>()->GetKey4Dir();
+		SetPos(GetPos() + input * speed); //現在地 + 入力 * 速度.
 	}
 	void ObjectShape::MovePad4Dir(float speed) {
-		SetPos(GetPos() + inputMng->GetPad4Dir()  * speed); //現在地 + 入力 * 速度.
+		const DBL_XY input = ManagerInsts::Get<InputMng>()->GetPad4Dir();
+		SetPos(GetPos() + input * speed); //現在地 + 入力 * 速度.
 	}
 	void ObjectShape::MovePadStick(float speed) {
-		SetPos(GetPos() + inputMng->GetPadStick() * speed); //現在地 + 入力 * 速度.
+		const DBL_XY input = ManagerInsts::Get<InputMng>()->GetPadStick();
+		SetPos(GetPos() + input * speed); //現在地 + 入力 * 速度.
 	}
 	void ObjectShape::MoveMousePos(bool isMoveX, bool isMoveY) {
+		const DBL_XY input = ManagerInsts::Get<InputMng>()->GetPadStick();
 		//有効ならマウス座標を反映.
-		double x = (isMoveX) ? inputMng->GetMousePos().x : GetPos().x;
-		double y = (isMoveY) ? inputMng->GetMousePos().y : GetPos().y;
+		double x = (isMoveX) ? input.x : GetPos().x;
+		double y = (isMoveY) ? input.y : GetPos().y;
 		SetPos({x, y});
 	}
 	

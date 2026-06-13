@@ -5,7 +5,7 @@
 
 //[include] ".cpp"ファイルでのみ使うもの.
 #include "KR_App.h"
-#include "KR_Draw.h"
+#include "KR_DrawShape.h"
 #include "KR_Camera.h"
 
 //KrLib名前空間.

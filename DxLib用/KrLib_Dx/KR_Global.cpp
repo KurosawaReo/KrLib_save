@@ -148,12 +148,4 @@ namespace KR
 	Polygon::Polygon(DBL_XY _pos, const vector<DBL_XY>& _points, MY_COLOR _color, float _thick) :
 		pos(_pos), points(_points), color(_color), thick(_thick)
 	{}
-
-	//Box3D.
-	Box3D::Box3D() :
-		stPos(0, 0, 0), edPos(0, 0, 0), difColor(ColorID::White), spcColor(ColorID::White) //èâä˙íl.
-	{}
-	Box3D::Box3D(DBL_XYZ _stPos, DBL_XYZ _edPos, MY_COLOR _difColor, MY_COLOR _spcColor) :
-		stPos(_stPos), edPos(_edPos), difColor(_difColor), spcColor(_spcColor)
-	{}
 }

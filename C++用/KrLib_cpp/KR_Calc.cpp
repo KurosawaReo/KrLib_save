@@ -17,26 +17,59 @@ namespace KR
 			if (pos->x > rect.right - size.x/2) { pos->x = rect.right - size.x/2; }
 			if (pos->y > rect.down  - size.y/2) { pos->y = rect.down  - size.y/2; }
 		}
+
 		//エリアの範囲外かどうか.
-		bool IsOutInArea(DBL_XY pos, INT_XY size, DBL_RECT rect, bool isCompOut) {
+		bool IsOutInArea(DBL_XY pos, INT_XY size, DBL_RECT rect, bool isCompOut, Surface* surface) {
+
+			bool IsOutHori = false; //左右面から出たか.
+			bool IsOutVert = false; //上下面から出たか.
 
 			//完全に出たら範囲外とする.
 			if (isCompOut) {
-				if (pos.x < rect.left  - size.x/2) { return true; }
-				if (pos.y < rect.up    - size.y/2) { return true; }
-				if (pos.x > rect.right + size.x/2) { return true; }
-				if (pos.y > rect.down  + size.y/2) { return true; }
+				if (pos.x < rect.left  - size.x/2 ||
+				    pos.x > rect.right + size.x/2
+				){ 
+					IsOutHori = true; //左右面.
+				}
+				if (pos.y < rect.up    - size.y/2 ||
+				    pos.y > rect.down  + size.y/2
+				){ 
+					IsOutVert = true; //上下面.
+				}
 			}
 			//ちょっとでも出たら範囲外とする.
 			else {
-				if (pos.x < rect.left  + size.x/2) { return true; }
-				if (pos.y < rect.up    + size.y/2) { return true; }
-				if (pos.x > rect.right - size.x/2) { return true; }
-				if (pos.y > rect.down  - size.y/2) { return true; }
+				if (pos.x < rect.left  + size.x/2 ||
+				    pos.x > rect.right - size.x/2
+				){ 
+					IsOutHori = true; //左右面.
+				}
+				if (pos.y < rect.up    + size.y/2 ||
+				    pos.y > rect.down  - size.y/2
+				){ 
+					IsOutVert = true; //上下面.
+				}
 			}
 
-			return false; //範囲内.
+			//条件別処理.
+			if (IsOutHori && IsOutVert) {
+				_param_ret_ptr(surface, Surface::All); //角から出た.
+				return true;
+			}
+			else {
+				if (IsOutHori) {
+					_param_ret_ptr(surface, Surface::Horizontal); //左右面から出た.
+					return true;
+				}
+				if (IsOutVert) {
+					_param_ret_ptr(surface, Surface::Vertical);   //上下面から出た.
+					return true;
+				}
+			}
+			_param_ret_ptr(surface, Surface::None); //範囲内にいる.
+			return false;
 		}
+
 		//角度を0～360度に正規化.
 		double FixAngle360(double ang) {
 			//① -360～360 にする.
@@ -52,30 +85,45 @@ namespace KR
 		double Dist(DBL_XY pos1, DBL_XY pos2) {
 			return (pos1 - pos2).Dist(); //斜辺の長さを返す.
 		}
+
 		//中点座標を求める.
 		//[座標1,座標2 → 中点座標]
 		DBL_XY MidPos(DBL_XY pos1, DBL_XY pos2) {
 			return (pos1 + pos2)/2; //xとyの平均を返す.
 		}
+
 		//角度と長さから円周上の座標を求める.
 		//[座標1,角度,長さ → 座標2]
 		DBL_XY ArcPos(DBL_XY pos, double ang, double len) {
 			return pos + AngToVector(ang) * len; //終点座標を返す.
 		}
+		
 		//始点座標から対象座標への方向を求める.
 		//[座標1,座標2 → 角度]
 		//[返り値:-180.0～180.0]
 		double FacingAng(DBL_XY from, DBL_XY to) {
 			return (to - from).Angle();
 		}
+		
 		//角度からベクトルを求める.
 		DBL_XY AngToVector(double ang) {
 			return { cos(_rad(ang)), sin(_rad(ang)) }; //vector(-1.0～+1.0)を返す.
 		}
+		
 		//角度の差を求める.
 		//[返り値:-180.0～180.0]
 		double AngleDiff(double now, double target) {
 			return FixAngle360(target - now + 180) - 180.0;
+		}
+
+		//内積.
+		double DotProduct(DBL_XY vec1, DBL_XY vec2) {
+			return vec1.x * vec2.x + vec1.y * vec2.y;
+		}
+
+		//外積.
+		double CrossProduct(DBL_XY vec1, DBL_XY vec2) {
+			return vec1.x * vec2.y - vec1.y * vec2.x;
 		}
 
 		/*
@@ -162,6 +210,7 @@ namespace KR
 			}
 			return 0; //未対応のタイプ.
 		}
+
 		double AnimWave(WaveType type, double time) {
 			//タイプ別.
 			switch (type) {
@@ -174,17 +223,6 @@ namespace KR
 			return 0; //未対応のタイプ.
 		}
 
-		//値の抽選.
-		int RandNum(int st, int ed) {
-
-			int rnd = 0;
-
-			//edがst以上の時のみ抽選.
-			_if_check(st <= ed) {
-				rnd = rand() % ((ed - st) + 1); //st～endの差で抽選.
-			}
-			return st + rnd;
-		}
 		//値の抽選(重複なし複数)
 		vector<int> RandNums(int st, int ed, int count) {
 
@@ -216,6 +254,7 @@ namespace KR
 			//抽選結果を返す.
 			return ret;
 		}
+		
 		//値から小数だけ取り出す.
 		double GetDecimal(double num) {
 			return fmod(num, 1.0); //1.0で割った余り.

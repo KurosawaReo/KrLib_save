@@ -1,6 +1,6 @@
 /*
    - KR_Global.h - (C++)
-   ver.2026/06/01
+   ver.2026/06/14
 
    KrLib全体で使う汎用プログラム。
 */
@@ -20,11 +20,12 @@
 #include <unordered_map>
 #include <array>
 #include <memory>
-#include <string>  //string型用.
-#include <cassert> //assert.h をラップしたもの.
-#include <cmath>   //math.h   をラップしたもの.
-#include <cstdlib> //stdlib.h をラップしたもの.
-#include <ctime>   //time.h   をラップしたもの.
+#include <string>		//string型用.
+#include <cassert>		//assert.h をラップしたもの.
+#include <cmath>		//math.h   をラップしたもの.
+#include <cstdlib>		//stdlib.h をラップしたもの.
+#include <ctime>		//time.h   をラップしたもの.
+#include <functional>	//ラムダ式用.
 //C言語用.
 #include <tchar.h>
 
@@ -40,6 +41,7 @@ using std::string;
 using std::wstring;
 using std::to_string;
 using std::to_wstring;
+using std::function;
 
 //型変換マクロ.
 #define _int(n)   static_cast<int>   (n)        //int型変換マクロ.
@@ -51,10 +53,11 @@ using std::to_wstring;
 #define _rad(n) (n)*(M_PI/180)
 #define _deg(n) (n)*(180/M_PI)
 //便利マクロ.
-#define _if_check(n)        assert(n); if(n)             //if文の前に同条件のassertを挟む.
-#define _return(num, condi) if (condi) { return num; }   //条件に合うならreturnする(cond = 条件)
-#define _get_name(value)    #value                       //変数名や関数名を取得.
-#define _elif               else if                      //「else if」の略.
+#define _if_check(n)        assert(n); if(n)						//if文の前に同条件のassertを挟む.
+#define _return(num, condi) if (condi) { return (num); }			//条件に合うならreturnする(cond = 条件)
+#define _get_name(value)    #value									//変数名や関数名を取得.
+#define _elif               else if									//「else if」の略.
+#define _param_ret_ptr(ptr, value)	if (ptr) { *(ptr) = (value); }	//返り値引数ポインタ用.
 //template用マクロ.
 #define _type_num_only(T)	typename = typename std::enable_if_t<std::is_arithmetic<T>::value> //算術型(int/float/double/char)のみOKとし, そうでない場合は関数を無効にする.
 
@@ -74,7 +77,7 @@ namespace KR
 	template<class Key, class Value>
 	using umap = unordered_map<Key, Value>;
 
-	//[2D] xとyの凝縮型.
+	//xとyの凝縮型.
 	template<typename T> //型を<>で入力して使う.
 	struct XY
 	{
@@ -92,21 +95,20 @@ namespace KR
 		XY<double> ToDbl() const {
 			return {_dbl(x), _dbl(y)};
 		}
-		//加算した結果を返す.
-		XY<T> Add(T _x, T _y) const {
-			return { x + _x, y + _y};
-		}
-		XY<T> Add(XY<T> other) const {
-			return *this + other;
-		}
+
 		//距離を求める.
 		double Dist() const {
 			return sqrt(x * x + y * y);
 		}
 		//方向ベクトル(長さは1.0の力の向き)を求める.
-		XY<T> Normalize() const {
-			const double len = Dist();     //距離を取得.
-			if (len == 0) return { 0, 0 }; //距離0ならベクトルなし.
+		XY<double> Normalize() const {
+			
+			const double len = Dist(); //距離を取得.
+			
+			//距離0ならベクトルなし.
+			if (len == 0) {
+				return { 0, 0 };
+			}
 			return { x/len, y/len };
 		}
 		//ベクトルの角度を求める.
@@ -125,11 +127,36 @@ namespace KR
 			return { x * other.x, y * other.y };
 		}
 		XY<T> operator/(const XY<T>& other) const {
-			return { x / other.x, y / other.y };
+
+			XY<T> ret{};
+
+			//x側.
+			if (other.x != 0) {
+				ret.x = x / other.x;
+			}
+			//y側.
+			if (other.y != 0) {
+				ret.y = y / other.y;
+			}
+
+			return ret;
 		}
 		XY<T> operator%(const XY<T>& other) const {
-			return { x % other.x, y % other.y };
+			
+			XY<T> ret{};
+
+			//x側.
+			if (other.x != 0) {
+				ret.x = Mod(x, other.x);
+			}
+			//y側.
+			if (other.y != 0) {
+				ret.y = Mod(y, other.y);
+			}
+
+			return ret;
 		}
+
 		//演算子[+=,-=,*=,/=,%=] [XY<T>・XY<T>]
 		XY<T>& operator+=(const XY<T>& other) {
 			*this = *this + other;
@@ -168,12 +195,29 @@ namespace KR
 		}
 		template<typename T2, _type_num_only(T2)>
 		XY<T> operator/(T2 num) const {
-			return { x / static_cast<T>(num), y / static_cast<T>(num) };
+
+			XY<T> ret{};
+
+			//0割対策.
+			if (num == 0) { return ret; }
+
+			ret.x = x / static_cast<T>(num);
+			ret.y = y / static_cast<T>(num);
+			return ret;
 		}
 		template<typename T2, _type_num_only(T2)>
 		XY<T> operator%(T2 num) const {
-			return { x % static_cast<T>(num), y % static_cast<T>(num) };
+
+			XY<T> ret{};
+
+			//0割対策.
+			if (num == 0) { return ret; }
+
+			ret.x = Mod(x, num);
+			ret.y = Mod(y, num);
+			return ret;
 		}
+
 		//演算子[+=,-=,*=,/=,%=] [XY<T>・数値]
 		//右側が数値でなければ無効にする.
 		template<typename T2, _type_num_only(T2)>
@@ -201,126 +245,21 @@ namespace KR
 			*this = *this % num;
 			return *this;
 		}
+
+	private:
+		//余り算(0割対策込み)
+		static T Mod(T a, T b)
+		{
+			if constexpr (std::is_floating_point_v<T>) {
+				return std::fmod(a, b); //float, double用.
+			}
+			else {
+				return a % b;           //int用.
+			}
+		}
 	};
 	using INT_XY = XY<int>;    //int型.
 	using DBL_XY = XY<double>; //double型.
-
-	//[3D] xとyとzの凝縮型.
-	template<typename T> //型を<>で入力して使う.
-	struct XYZ
-	{
-		T x, y, z;
-
-		//コンストラクタ.
-		XYZ()                 : x(0),  y(0),  z(0)  {}
-		XYZ(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {} 
-
-		//int型に変換.
-		XYZ<int>    ToInt() const {
-			return {_int_r(x), _int_r(y), _int_r(z)};
-		}
-		//double型に変換.
-		XYZ<double> ToDbl() const {
-			return {_dbl(x), _dbl(y), _dbl(z)};
-		}
-		//加算した結果を返す.
-		XYZ<T> Add(T _x, T _y, T _z) const {
-			return { x + _x, y + _y, z + _z};
-		}
-		XYZ<T> Add(XYZ<T> other) const {
-			return *this + other;
-		}
-
-		//演算子[+,-,*,/,%] [XYZ<T>・XYZ<T>]
-		XYZ<T> operator+(const XYZ<T>& other) const { 
-			return { x + other.x, y + other.y, z + other.z };
-		}
-		XYZ<T> operator-(const XYZ<T>& other) const {
-			return { x - other.x, y - other.y, z - other.z };
-		}
-		XYZ<T> operator*(const XYZ<T>& other) const {
-			return { x * other.x, y * other.y, z * other.z };
-		}
-		XYZ<T> operator/(const XYZ<T>& other) const {
-			return { x / other.x, y / other.y, z / other.z };
-		}
-		XYZ<T> operator%(const XYZ<T>& other) const {
-			return { x % other.x, y % other.y, z % other.z };
-		}
-		//演算子[+=,-=,*=,/=,%=] [XYZ<T>・XYZ<T>]
-		XYZ<T>& operator+=(const XYZ<T>& other) {
-			*this = *this + other;
-			return *this; //自身の実体.
-		}
-		XYZ<T>& operator-=(const XYZ<T>& other) {
-			*this = *this - other;
-			return *this;
-		}
-		XYZ<T>& operator*=(const XYZ<T>& other) {
-			*this = *this * other;
-			return *this;
-		}
-		XYZ<T>& operator/=(const XYZ<T>& other) {
-			*this = *this / other;
-			return *this;
-		}
-		XYZ<T>& operator%=(const XYZ<T>& other) {
-			*this = *this % other;
-			return *this;
-		}
-
-		//演算子[+,-,*,/,%] [XYZ<T>・数値]
-		//右側が数値でなければ無効にする.
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T> operator+(T2 num) const {
-			return { x + static_cast<T>(num), y + static_cast<T>(num), z + static_cast<T>(num) }; //cast後にxとyを加算して返す.
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T> operator-(T2 num) const {
-			return { x - static_cast<T>(num), y - static_cast<T>(num), z - static_cast<T>(num) };
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T> operator*(T2 num) const {
-			return { x * static_cast<T>(num), y * static_cast<T>(num), z * static_cast<T>(num) };
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T> operator/(T2 num) const {
-			return { x / static_cast<T>(num), y / static_cast<T>(num), z / static_cast<T>(num) };
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T> operator%(T2 num) const {
-			return { x % static_cast<T>(num), y % static_cast<T>(num), z % static_cast<T>(num) };
-		}
-		//演算子[+=,-=,*=,/=,%=] [XYZ<T>・数値]
-		//右側が数値でなければ無効にする.
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T>& operator+=(T2 num) {
-			*this = *this + num;
-			return *this; //自身の実体.
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T>& operator-=(T2 num) {
-			*this = *this - num;
-			return *this;
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T>& operator*=(T2 num) {
-			*this = *this * num;
-			return *this;
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T>& operator/=(T2 num) {
-			*this = *this / num;
-			return *this;
-		}
-		template<typename T2, _type_num_only(T2)>
-		XYZ<T>& operator%=(T2 num) {
-			*this = *this % num;
-			return *this;
-		}
-	};
-	using INT_XYZ = XYZ<int>;    //int型.
-	using DBL_XYZ = XYZ<double>; //double型.
 
 	//四角形型.
 	template<typename T, _type_num_only(T)>
@@ -375,6 +314,15 @@ namespace KR
 		MY_STRING GetMsg() const {
 			return _T("[Error] FuncName: ") + funcName + _T(", Msg: ") + msg;
 		}
+	};
+
+	//面(当たった面など)
+	enum class Surface
+	{
+		All,        //四面.
+		Horizontal, //左右面.
+		Vertical,   //上下面.
+		None        //なし.
 	};
 
 	//<T> 数値が範囲内か.

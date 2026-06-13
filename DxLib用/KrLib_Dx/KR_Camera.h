@@ -1,6 +1,6 @@
 /*
    - KR_Camera.h - (DxLib)
-   ver.2026/05/28
+   ver.2026/06/12
 
    カメラ機能。現状2Dのみ対応。
 */
@@ -29,19 +29,18 @@ namespace KR
 
 	//▼ ===== 変数 ===== ▼.
 	private:
-		DBL_XYZ cameraPos{}; //カメラ座標.
+		DBL_XY  cameraPos{}; //カメラ座標.
 		double  cameraAng{}; //カメラ角度(2D用)
 
 	//▼ ===== 関数 ===== ▼.
 	private:
 		//コンストラクタ.
-		Camera() : cameraPos(0, 0, 0), cameraAng(0) {}
+		Camera() : cameraPos(0, 0), cameraAng(0) {}
 
 	public:
 		//get.
-		static DBL_XY  GetPos()   { return {inst.cameraPos.x, inst.cameraPos.y}; }
-		static DBL_XYZ GetPos3D() { return inst.cameraPos; }
-		static double  GetAng()   {	return inst.cameraAng; }
+		static DBL_XY GetPos() { return {inst.cameraPos.x, inst.cameraPos.y}; }
+		static double GetAng() { return inst.cameraAng; }
 
 		//set, add.
 		static void SetPos(DBL_XY _pos);

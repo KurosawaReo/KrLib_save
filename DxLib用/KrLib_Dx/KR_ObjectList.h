@@ -1,6 +1,6 @@
 /*
    - KR_ObjectList.h - (DxLib)
-   ver.2026/05/07
+   ver.2026/06/14
 
    オブジェクトを扱うリスト。
 */
@@ -29,18 +29,19 @@ namespace KR
 	{
 	//▼ ===== 変数 ===== ▼.
 	private:
-		list<unique_ptr<T>> objects; //object実体配列.
+		vector<unique_ptr<T>> objects; //object実体配列.
 
 	//▼ ===== 関数 ===== ▼.
 	public:
 		//get.
-		const list<unique_ptr<T>>& GetObjects() const { return objects; } //object全取得.
+		const vector<unique_ptr<T>>& GetObjects() const { return objects; } //object全取得.
 		int GetObjectCnt() const { return _int(objects.size()); }
 
 		//object生成.
 		//コンストラクタの引数も設定可能.
-		template<typename... Args>
+		template<typename... Args> requires std::constructible_from<T, Args...>
 		void NewObject(Args&&... args) {
+
 			try {
 				//コンストラクタ実行(引数は任意)
 				auto obj = make_unique<T>(std::forward<Args>(args)...);
@@ -50,7 +51,7 @@ namespace KR
 				objects.push_back(std::move(obj));
 			}
 			catch (const std::bad_alloc&) {
-				throw ErrorMsg(_T("ObjectMng<T>::Generate"), _T("make_uniqueエラー"));
+				throw ErrorMsg(_T("ObjectList<T>::NewObject"), _T("make_uniqueエラー"));
 			}
 		}
 

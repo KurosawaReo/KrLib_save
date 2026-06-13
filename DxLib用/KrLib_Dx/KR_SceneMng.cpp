@@ -12,17 +12,19 @@ namespace KR
 	   InputMngやSoundMngは自動実行を止める必要はないが
 	   SceneMngは自動実行を止めれるよう、専用の関数を用意.
 	*/
+	//自動実行設定.
 	void SceneMng::SetAutoExeMode(MngAutoExe _state) {
-		ManagerBase::SetAutoExeMode(_state); //自動実行設定.
+		ManagerBase::SetAutoExeMode(_state);
 	}
+	//1つ前のモードに戻す.
 	void SceneMng::BackAutoExeMode() {
-		ManagerBase::BackAutoExeMode();      //1つ前のモードに戻す.
+		ManagerBase::BackAutoExeMode();
 	}
 
 	//シーン追加.
 	void SceneMng::AddScene(IScene* sceneClass, string saveName) {
-		sceneClass->Init();                 //初期化.
-		scenes[saveName] = sceneClass; //クラスを登録.
+		sceneClass->Init();				//初期化.
+		scenes[saveName] = sceneClass;	//クラスを登録.
 	}
 	//シーン変更.
 	void SceneMng::SetScene(string saveName) {

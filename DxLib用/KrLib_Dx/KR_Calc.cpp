@@ -26,6 +26,7 @@ namespace KR
 				return false;
 			}
 		}
+
 		//当たり判定(四角と四角)
 		bool HitBoxBox(const Box& box1, const Box& box2) {
 
@@ -39,9 +40,10 @@ namespace KR
 				return false;
 			}
 		}
+
 		//当たり判定(四角と円)
 		//任意で引数から当たった面を受け取れる.
-		bool HitBoxCir(const Box& box, const Circle& cir, HitSurface* ori) {
+		bool HitBoxCir(const Box& box, const Circle& cir, Surface* surface) {
 
 			DBL_XY nearest = cir.pos;
 
@@ -54,69 +56,52 @@ namespace KR
 			//当たったかどうか(距離が半径以下ならhit)
 			if (dist.Dist() <= cir.r) {
 				//当たった方向を返す.
-				if (ori) {
-					if (abs(dist.x) > abs(dist.y)) {
-						*ori = HitSurface::Horizontal; //左右の面.
-					}
-					else {
-						*ori = HitSurface::Vertical;   //上下の面.
-					}
+				if (abs(dist.x) > abs(dist.y)) {
+					_param_ret_ptr(surface, Surface::Horizontal); //左右面.
+				}
+				else {
+					_param_ret_ptr(surface, Surface::Vertical);   //上下面.
 				}
 				return true;
 			}
 			else {
-				if (ori) {
-					*ori = HitSurface::None; //当たってない.
-				}
+				_param_ret_ptr(surface, Surface::None); //当たってない.
 				return false;
 			}
 		}
+
 		//当たり判定(線と円)
 		bool HitLineCir(const Line& line, const Circle& cir) {
 
-			//線の始点と終点から傾きを求める.
-			double katamuki;
-			{
-				double x = line.edPos.x - line.stPos.x;
-				double y = line.edPos.y - line.stPos.y;
-				if (x != 0) {
-					katamuki = y / x;
-				}
-				else {
-					katamuki = 999; //0割対策.
-				}
-			}
-			//線を方程式にした時の切片.
-			double seppen = line.stPos.y - line.stPos.x * katamuki;
-
-			//線～円の距離.
-			double dis1;
-			{
-				//直線: ax + by + c = 0
-				//bを1として「y = 」の形にする→ y = -ax - c
-				double a = -katamuki;
-				double b = 1;
-				double c = -seppen;
-				//公式: d = |ax + by + c|/√(a^2 + b^2)
-				dis1 = fabs(a*cir.pos.x + b*cir.pos.y + c) / sqrt(a*a + b*b);
-			}
-			//線の中点～円の中心の距離.
-			double dis2;
-			{
-				double x = cir.pos.x - MidPos(line.stPos, line.edPos).x;
-				double y = cir.pos.y - MidPos(line.stPos, line.edPos).y;
-				//距離: d = √(x^2 + y^2) (三平方の定理)
-				dis2 = sqrt(x*x + y*y);
+			//線の長さが0なら計算しない.
+			if (Calc::Dist(line.stPos, line.edPos) == 0) { 
+				return false;
 			}
 
-			//hit条件.
-			if (dis1 <= cir.r &&                               //条件1: 線に触れている.
-				dis2 <= Dist(line.stPos, line.edPos)/2 + cir.r //条件2: 線を直径とする円に触れている.
+			//線の始点から終点までのベクトル.
+			DBL_XY v1 = line.stPos - line.edPos;
+			//線の終点から始点までのベクトル.
+			DBL_XY v2 = line.edPos - line.stPos;
+			//線の始点から円までのベクトル.
+			DBL_XY v3 = line.stPos - cir.pos;
+			//線の終点から円までのベクトル.
+			DBL_XY v4 = line.edPos - cir.pos;
+
+			//[外積] 線から円の距離を計算.
+			double dist = abs(Calc::CrossProduct(v1.Normalize(), v3));
+			//[内積] 線と円の角度差を計算.
+			double ang1 = Calc::DotProduct(v1, v3);
+			double ang2 = Calc::DotProduct(v2, v4);
+
+			//当たり判定.
+			if (dist <= cir.r          && //条件1: 線と円の距離が、円の半径以下.
+				ang1 >= 0 && ang2 >= 0    //条件2: 線と円の角度差が2つとも鋭角.
 			){
-				return true;
+				return true; //当たった.
 			}
-			return false;
+			return false; //当たってない.
 		}
+
 		//当たり判定(扇形と点)
 		bool HitPie(const Pie& pie, DBL_XY pos) {
 

@@ -1,6 +1,6 @@
 /*
    - KR_Calc.h - (DxLib)
-   ver.2026/05/21
+   ver.2026/06/14
 
    当たり判定などの計算機能。
 */
@@ -13,21 +13,13 @@
 //KrLib名前空間.
 namespace KR
 {
-	//当たった面.
-	enum class HitSurface
-	{
-		Horizontal, //左右面.
-		Vertical,   //上下面.
-		None        //当たってない.
-	};
-
 	//計算用の関数群.
 	namespace Calc
 	{
 		//当たり判定.
 		bool	HitCirCir	(const Circle& cir1, const Circle& cir2);
 		bool	HitBoxBox	(const Box&    box1, const Box&    box2);
-		bool	HitBoxCir	(const Box&    box,  const Circle& cir, HitSurface* ori = nullptr);
+		bool	HitBoxCir	(const Box&    box,  const Circle& cir, Surface* surface = nullptr);
 		bool	HitLineCir	(const Line&   line, const Circle& cir);
 		bool	HitPie		(const Pie&    pie,  DBL_XY pos);
 

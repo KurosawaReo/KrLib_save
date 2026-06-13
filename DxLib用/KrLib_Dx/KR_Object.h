@@ -1,6 +1,6 @@
 /*
    - KR_Object.h - (DxLib)
-   ver.2026/05/07
+   ver.2026/06/14
 
    オブジェクト機能。
    継承して使うことで、Draw/Calc/Inputの一部機能をオブジェクト指向で使える。
@@ -59,7 +59,7 @@ namespace KR
 		void      SetStopImgAnim (bool isStop);
 		//Calcの機能.
 		void      FixPosInArea   (DBL_RECT rect);
-		bool      IsOutInArea    (DBL_RECT rect, bool isCompOut);
+		bool      IsOutInArea    (DBL_RECT rect, bool isCompOut, Surface* surface = nullptr);
 		double    Dist			 (DBL_XY pos);
 		DBL_XY    ArcPos		 (double ang, double len);
 		double    FacingAng		 (DBL_XY targetPos);

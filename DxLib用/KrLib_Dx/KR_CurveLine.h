@@ -1,6 +1,6 @@
 /*
    - KR_CurveLine.h - (DxLib)
-   ver.2026/05/07
+   ver.2026/06/12
 
    ベジエ曲線と、スプライン曲線。
 */
@@ -20,7 +20,7 @@ namespace KR
 	{
 	//▼ ===== 変数 ===== ▼.
 	private:
-		bool isDrag; //ドラッグされてるか.
+		bool isDrag{}; //ドラッグされてるか.
 
 	//▼ ===== 関数 ===== ▼.
 	public:

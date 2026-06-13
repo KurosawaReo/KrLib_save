@@ -6,6 +6,7 @@
 //[include] ".cpp"ファイルでのみ使うもの.
 #include "KR_App.h"
 #include "KR_Calc.h"
+#include "KR_DrawShape.h"
 #include "KR_Camera.h"
 #include "KR_Input.h"
 #include "KR_ManagerInsts.h"
@@ -43,7 +44,7 @@ namespace KR
 		//円.
 		DrawShape();
 		//数字.
-		DrawStr str(_to_mystr(num), GetPos().ToInt().Add(1, 1), ColorID::Black);
+		DrawStr str(_to_mystr(num), GetPos().ToInt() + INT_XY{1, 1}, ColorID::Black);
 		str.Draw();
 	}
 	

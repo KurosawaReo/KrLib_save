@@ -1,6 +1,6 @@
 /*
    - KR_Calc.h - (C++)
-   ver.2026/05/28
+   ver.2026/06/14
 
    C++だけでできる計算機能。
 */
@@ -9,6 +9,10 @@
 #if !defined DEF_KR_CPP_GLOBAL
   #include "KR_Global.h"
 #endif
+
+//[include] ".h"ファイルで使うもの.
+#include <random>
+#include <type_traits>
 
 //KrLib名前空間.
 namespace KR
@@ -32,7 +36,7 @@ namespace KR
 	{
 		//範囲限界.
 		void		FixPosInArea(DBL_XY* pos, INT_XY size, DBL_RECT rect);
-		bool		IsOutInArea	(DBL_XY  pos, INT_XY size, DBL_RECT rect, bool isCompOut);
+		bool		IsOutInArea	(DBL_XY  pos, INT_XY size, DBL_RECT rect, bool isCompOut, Surface* surface = nullptr);
 		double		FixAngle360	(double ang);
 
 		//角度,ベクトル.
@@ -43,6 +47,8 @@ namespace KR
 		double		FacingAng	(DBL_XY from, DBL_XY to);
 		DBL_XY      AngToVector	(double ang);
 		double      AngleDiff   (double now, double target);
+		double      DotProduct	(DBL_XY vec1, DBL_XY vec2);
+		double      CrossProduct(DBL_XY vec1, DBL_XY vec2);
 
 		//物理系.
 		void        PhysicsVel	(DBL_XY* vel, DBL_XY maxVel, bool isGround, double gravity, double friction, double airDrag);
@@ -52,8 +58,26 @@ namespace KR
 		double      AnimWave	(WaveType type, double time);
 
 		//値の操作.
-		int         RandNum		(int st, int ed);
 		vector<int> RandNums	(int st, int ed, int count);
 		double      GetDecimal	(double num);
+
+		//値の抽選.
+		template<typename T>
+		static T RandNum(T min, T max) {
+
+			//乱数生成器(初回のみ生成).
+			static std::mt19937 gen(std::random_device{}());
+
+			//int型.
+			if constexpr (std::is_integral_v<T>) {
+				std::uniform_int_distribution<T> dist(min, max);
+				return dist(gen);
+			}
+			//float, double型.
+			else if constexpr (std::is_floating_point_v<T>) {
+				std::uniform_real_distribution<T> dist(min, max);
+				return dist(gen);
+			}
+		}
 	}
 }

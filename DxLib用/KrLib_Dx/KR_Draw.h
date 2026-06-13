@@ -1,6 +1,6 @@
 /*
    - KR_Draw.h - (DxLib)
-   ver.2026/05/07
+   ver.2026/06/13
 
    図形や画像の描画機能。
    (オブジェクト指向ver → KR_Object)
@@ -167,24 +167,6 @@ namespace KR
 		//描画.
 		void Draw(bool isClose = false, bool isCameraDisp = true);
 	};
-
-	//2D描画.
-	void DrawPixelKR	 (DBL_XY pos, MY_COLOR color,                                                                       bool isCameraDisp = true);
-	void DrawCircleKR	 (const Circle&     cir,    Anchor anc = Anchor::Mid, bool isFill = true,      bool isAnti = false, bool isCameraDisp = true);
-	void DrawBoxKR		 (const Box&        box,    Anchor anc = Anchor::Mid, bool isFill = true,      bool isAnti = false, bool isCameraDisp = true);
-	void DrawTriangleKR	 (const Triangle&   tri,                              bool isFill = true,      bool isAnti = false, bool isCameraDisp = true);
-	void DrawLineKR		 (const Line&       line,                                                      bool isAnti = false, bool isCameraDisp = true);
-	void DrawPieKR		 (const Pie&        pie,                                                       bool isAnti = false, bool isCameraDisp = true);
-	void DrawArcKR		 (const Pie&        pie,                                                       bool isAnti = false, bool isCameraDisp = true);
-	void DrawBezierLineKR(const BezierLine& bLine,                            bool isDot,              bool isAnti = false, bool isCameraDisp = true);
-	void DrawSplineKR    (const Spline&     spline, int degree,               bool isDot,              bool isAnti = false, bool isCameraDisp = true);
-	void DrawPolygonKR   (const Polygon&    poly,                             bool isSurround = false, bool isAnti = false, bool isCameraDisp = true);
-	void FillPolygon     (const Polygon&    poly,                             bool isSurround = false,                      bool isCameraDisp = true);
-
-	void DrawWindowGrid	 (int wid, int hei, int size, MY_COLOR clrWid = {160, 160, 255}, MY_COLOR clrHei = {255, 160, 160});
-
-	//3D描画(試作品)
-	void DrawBox3DKR	 (const Box3D& box, bool isFill = true);
 
 	//描画モード設定(スコープ内のみ有効)
 	class DrawMode

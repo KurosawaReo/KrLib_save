@@ -15,7 +15,7 @@ namespace KR
 
 	//set.
 	void Camera::SetPos(DBL_XY _pos) {
-		inst.cameraPos = { _pos.x, _pos.y, 0 };
+		inst.cameraPos = { _pos.x, _pos.y };
 	}
 	void Camera::SetAng(double _ang) {
 		inst.cameraAng = _ang;

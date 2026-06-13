@@ -5,6 +5,7 @@
 
 //[include] ".cpp"ファイルでのみ使うもの.
 #include "KR_Camera.h"
+#include "KR_Debug.h"
 #include "KR_ManagerBase.h"
 #include "KR_ManagerInsts.h"
 
@@ -44,56 +45,72 @@ namespace KR
 	//DxLibの初期化処理.
 	void App::InitDx(int windowWid, int windowHei, bool isWindowMode, int fps, bool isVSync) {
 
-		ChangeWindowMode(isWindowMode);				//TRUEでwindow, FALSEで全画面にする.
-		SetWindowSize   (windowWid, windowHei);		//ウィンドウサイズの設定.
-		SetGraphMode    (windowWid, windowHei, 32); //解像度の設定.
-		SetWaitVSyncFlag((isVSync) ? TRUE : FALSE);	//FALSEでVSyncを無効化(FPS制限なし)
-		SetDrawScreen   (DX_SCREEN_BACK);			//裏画面へ描画(ダブルバッファ)
-		SetOutApplicationLogValidFlag(FALSE);		//FALSEでLog.txtにログを書き込まない.
+		try {
+			ChangeWindowMode(isWindowMode);				//TRUEでwindow, FALSEで全画面にする.
+			SetWindowSize   (windowWid, windowHei);		//ウィンドウサイズの設定.
+			SetGraphMode    (windowWid, windowHei, 32); //解像度の設定.
+			SetWaitVSyncFlag((isVSync) ? TRUE : FALSE);	//FALSEでVSyncを無効化(FPS制限なし)
+			SetDrawScreen   (DX_SCREEN_BACK);			//裏画面へ描画(ダブルバッファ)
+			SetOutApplicationLogValidFlag(FALSE);		//FALSEでLog.txtにログを書き込まない.
 
-		//DxLibの初期化.
-		if (DxLib_Init() == -1) {
-			throw ErrorMsg(_T("App::InitDx"), _T("初期化エラー"));
-			return;
+			//DxLibの初期化.
+			if (DxLib_Init() == -1) {
+				throw ErrorMsg(_T("App::InitDx"), _T("初期化エラー"));
+				return;
+			}
+
+			//fps計測用タイマー.
+			inst.tmFps = TimerMicro(TimerMode::CountDown, 1000000/fps);
+			inst.tmFps.Start();
+			//値の保存.
+			inst.windowSize = { windowWid, windowHei };
+			inst.fps = fps;
+			//変数初期化.
+			inst.isQuit = false;
+
+			//order値で並べ替える.
+			ManagerInsts::SortOrder();
+			//Initを実行.
+			for (const auto& i : ManagerInsts::GetAll()) {
+				i->Init();
+			}
+			//Resetを実行.
+			Reset();
 		}
-
-		//fps計測用タイマー.
-		inst.tmFps = TimerMicro(TimerMode::CountDown, 1000000/fps);
-		inst.tmFps.Start();
-		//値の保存.
-		inst.windowSize = { windowWid, windowHei };
-		inst.fps = fps;
-		//変数初期化.
-		inst.isQuit = false;
-
-		//order値で並べ替える.
-		ManagerInsts::SortOrder();
-		//Initを実行.
-		for (const auto& i : ManagerInsts::GetAll()) {
-			i->Init();
+		catch (const ErrorMsg& err) {
+			//エラーメッセージ.
+			Debug::Log(err.GetMsg());
+			//待機.
+			WaitKey();
 		}
-		//Resetを実行.
-		Reset();
 	}
 
 	//DxLibのループ処理.
 	void App::LoopDx() {
 
-		//メインループ.
-		//ESCが押されるか、終了サインがあれば終了.
-		while (ProcessMessage() == 0 && !inst.isQuit) {
-			//一定時間ごとに処理.
-			if (inst.tmFps.IntervalTime()) {
-				//画面クリア.
-				ClearDrawScreen();
-				//Update, Drawを実行.
-				for (const auto& i : ManagerInsts::GetAll()) {
-					if (i->IsAutoUpdate()) { i->Update(); }
-					if (i->IsAutoDraw())   { i->Draw();   }
+		try {
+			//メインループ.
+			//ESCが押されるか、終了サインがあれば終了.
+			while (ProcessMessage() == 0 && !inst.isQuit) {
+				//一定時間ごとに処理.
+				if (inst.tmFps.IntervalTime()) {
+					//画面クリア.
+					ClearDrawScreen();
+					//Update, Drawを実行.
+					for (const auto& i : ManagerInsts::GetAll()) {
+						if (i->IsAutoUpdate()) { i->Update(); }
+						if (i->IsAutoDraw())   { i->Draw();   }
+					}
+					//表画面へ描画.
+					ScreenFlip();
 				}
-				//表画面へ描画.
-				ScreenFlip();
 			}
+		}
+		catch (const ErrorMsg& err) {
+			//エラーメッセージ.
+			Debug::Log(err.GetMsg());
+			//待機.
+			WaitKey();
 		}
 
 		inst.EndDx(); //終了処理.

@@ -168,17 +168,4 @@ namespace KR
 		Polygon();
 		Polygon(DBL_XY _pos, const vector<DBL_XY>& _points, MY_COLOR _color, float _thick);
 	};
-
-	//3D四角形データ [試作品]
-	struct Box3D
-	{
-		DBL_XYZ  stPos;    //始点座標.
-		DBL_XYZ  edPos;    //終点座標.
-		MY_COLOR difColor; //Diffuse  Color(ディフューズカラー) | 光源からまっすぐ当たる光の色.
-		MY_COLOR spcColor; //Specular Color(スペキュラカラー)   | 鏡面反射の色.
-
-		//コンストラクタ.
-		Box3D();
-		Box3D(DBL_XYZ _stPos, DBL_XYZ _edPos, MY_COLOR _difColor, MY_COLOR _spcColor);
-	};
 }

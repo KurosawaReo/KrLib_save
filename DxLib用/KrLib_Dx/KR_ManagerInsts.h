@@ -1,6 +1,6 @@
 /*
    - KR_ManagerInsts.h - (DxLib)
-   ver.2026/05/07
+   ver.2026/06/14
 
    Managerを管理するクラス。
 */
@@ -38,7 +38,8 @@ namespace KR
 	public:
 		//生成して登録.
 		//ManagerBaseを継承したクラスのみ指定可能.
-		template<class T, class... Args> requires std::derived_from<T, ManagerBase>
+		template<class T, class... Args> 
+			requires std::derived_from<T, ManagerBase> and std::constructible_from<T, Args...>
 		static T* NewManager(Args&&... args) {
 
 			//実体生成.

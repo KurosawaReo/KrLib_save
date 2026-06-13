@@ -2,7 +2,7 @@
    - KR_Timer.h - (DxLib)
    ver.2026/04/27
 
-   タイマー機能。
+   タイマー計測機能。
 */
 #pragma once
 //[include] KR_Global.
